@@ -195,12 +195,16 @@ module RubyRTF
           add_modifier_section({:newline => true}, "\n")
         else
           val += 65_536 if val < 0
-          char = if val < 10_000
-                   [val.to_s.hex].pack('U*')
-                 else
-                   [val].pack('U*')
-                 end
-          current_section[:text] << char
+          if encoding
+            current_section[:text] << val.chr(encoding)
+          else
+            char = if val < 10_000
+                     [val.to_s.hex].pack('U*')
+                   else
+                     [val].pack('U*')
+                   end
+            current_section[:text] << char
+          end
         end
 
       when *[:rquote, :lquote] then add_modifier_section({name => true}, "'")
